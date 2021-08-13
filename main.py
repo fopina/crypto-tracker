@@ -53,7 +53,7 @@ class ComboPack:
             chg, pct = self._combos[k].update(v['usd'])
             print(f'{k} at ${usd} | {pct * 100:-.2f} % | {chg}')
             if chg:
-                self.notify(f'{k} at ${usd} | {pct:-.2f}')
+                self.notify(f'{k} at ${usd} | {pct * 100:-.2f}')
 
     def notify(self, message):
         r = requests.post(
