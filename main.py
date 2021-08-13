@@ -22,7 +22,7 @@ class Combo:
             self.last_value = new_value
             self.last_value_at = time.time()
             return True, 100
-        change = (new_value - self.last_value) * 100 / self.last_value
+        change = (new_value - self.last_value) / self.last_value
         if change > self.pct_up or change < self.pct_down:
             self.last_value = new_value
             self.last_value_at = time.time()
@@ -51,7 +51,7 @@ class ComboPack:
         for k, v in prices.items():
             usd = v['usd']
             chg, pct = self._combos[k].update(v['usd'])
-            print(f'{k} at ${usd} | {pct:-.2f} | {chg}')
+            print(f'{k} at ${usd} | {pct * 100:-.2f} % | {chg}')
             if chg:
                 self.notify(f'{k} at ${usd} | {pct:-.2f}')
 
