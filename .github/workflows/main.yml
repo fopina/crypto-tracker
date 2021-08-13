@@ -1,9 +1,9 @@
 name: publish to dockerhub
 
 on:
-    push:
-      branches:
-      - master
+  push:
+    branches:
+      - main
 
 jobs:
   build:
