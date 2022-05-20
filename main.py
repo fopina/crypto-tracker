@@ -6,6 +6,10 @@ import requests
 
 from pycoingecko import CoinGeckoAPI
 
+CHART_DOWN = '📉'
+CHART_UP = '📈'
+SOON = '🔜'
+
 
 class Combo:
     def __init__(self, combo_string):
@@ -21,7 +25,7 @@ class Combo:
         if self.last_value is None:
             self.last_value = new_value
             self.last_value_at = time.time()
-            return True, 100
+            return True, None
         change = (new_value - self.last_value) / self.last_value
         if change > self.pct_up or change < self.pct_down:
             self.last_value = new_value
@@ -48,12 +52,24 @@ class ComboPack:
 
     def tick(self):
         prices = self._cg.get_price(ids=self._query, vs_currencies='usd')
+        notification = []
         for k, v in prices.items():
             usd = v['usd']
             chg, pct = self._combos[k].update(v['usd'])
-            print(f'{k} at ${usd} | {pct * 100:-.2f} % | {chg}')
+            if pct is None:
+                pct_text = SOON
+            else:
+                pct_text = f'{pct * 100:-.2f} %'
+            print(f'{k} at ${usd} | {pct_text} | {chg}')
             if chg:
-                self.notify(f'{k} at ${usd} | {pct * 100:-.2f}')
+                if pct:
+                    if pct > 0:
+                        pct_text = f'{pct_text} {CHART_UP}'
+                    else:
+                        pct_text = f'{pct_text} {CHART_DOWN}'
+                notification.append(f'{k} at ${usd} | {pct_text}')
+        if notification:
+            self.notify('\n'.join(notification))
 
     def notify(self, message):
         r = requests.post(
